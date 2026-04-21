@@ -7,20 +7,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
+            /* Цветове, вдъхновени директно от плаката */
             --dark-blue: #1a2a5a;
-            --highlight: #00d4ff;
-            --success: #5eead4;
+            --accent-blue: #3a5ba0;
             --white: #ffffff;
+            --highlight: #00d4ff; /* Светещо синьо */
+            --success: #5eead4; /* Светло зелено за статус */
         }
 
+        /* Анимация за пулсиране на активната карта */
         @keyframes pulse {
             0% { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.4); }
-            70% { box-shadow: 0 0 0 15px rgba(0, 212, 255, 0); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 212, 255, 0); }
             100% { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0); }
         }
 
         body {
             font-family: 'Montserrat', sans-serif;
+            /* Космически фон с мек градиент */
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             color: var(--white);
             margin: 0;
@@ -29,64 +33,88 @@
             align-items: center;
             min-height: 100vh;
             padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ДОПЪЛНИТЕЛНИ ЕЛЕМЕНТИ (Украса от плаката) */
+        body::before, body::after {
+            content: '';
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.1; /* Много лек фон */
+            z-index: -1;
+        }
+
+        /* Атом в горния ляв ъгъл (като на плаката) */
+        body::before {
+            top: 50px;
+            left: 50px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="10" fill="white"/><ellipse cx="50" cy="50" rx="40" ry="15" fill="none" stroke="white" stroke-width="2"/><ellipse cx="50" cy="50" rx="15" ry="40" fill="none" stroke="white" stroke-width="2"/></svg>');
+        }
+
+        /* Микроскоп в долния десен ъгъл (като на плаката) */
+        body::after {
+            bottom: 50px;
+            right: 50px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="30" y="20" width="10" height="60" fill="white"/><circle cx="50" cy="50" r="20" fill="white"/><rect x="70" y="60" width="20" height="10" fill="white"/></svg>');
         }
 
         .header {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             border-bottom: 2px solid var(--highlight);
+            padding-bottom: 10px;
+        }
+
+        .header h1 { margin-bottom: 5px; }
+        .header h3 { margin-top: 0; opacity: 0.9; }
+
+        .main-timer {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: var(--white); /* Таймерът е бял, статусът е светещ */
+            text-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+            margin: 15px 0;
+            letter-spacing: 2px;
         }
 
         .status-container {
-            background: rgba(255, 255, 255, 0.07);
-            backdrop-filter: blur(12px);
-            border-radius: 20px;
-            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
             width: 90%;
             max-width: 650px;
             text-align: center;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .label-top {
-            font-size: 1rem;
+        .current-event-status {
+            font-size: 1.1rem;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            opacity: 0.8;
-            margin-bottom: 10px;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            margin-bottom: 5px;
         }
 
         .current-event-name {
             font-size: 1.8rem;
             font-weight: bold;
-            color: var(--success);
-            margin-bottom: 5px;
+            color: var(--success); /* Светещо зелено за името на събитието */
+            margin-bottom: 15px;
             display: block;
         }
 
-        .current-location {
+        .next-event-info {
             font-size: 1.1rem;
-            color: var(--highlight);
-            margin-bottom: 20px;
-            display: block;
-        }
-
-        .main-timer {
-            font-size: 4rem;
-            font-weight: 700;
-            color: var(--white);
-            text-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
-            font-variant-numeric: tabular-nums;
-            margin: 10px 0;
-        }
-
-        .next-event-preview {
-            font-size: 0.95rem;
+            opacity: 0.8;
             margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            opacity: 0.9;
+            font-style: italic;
         }
 
         .schedule {
@@ -95,118 +123,92 @@
             max-width: 650px;
         }
 
+        .schedule-title {
+            text-align: center;
+            color: var(--highlight);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
         .event-item {
             display: flex;
             justify-content: space-between;
-            padding: 15px;
-            margin-bottom: 8px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 10px;
-            transition: 0.3s;
+            align-items: center;
+            padding: 15px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: 0.3s ease;
+            border-radius: 8px;
         }
 
+        /* АКТИВНА КАРТА - с пулсиране и подчертаване */
         .active {
             animation: pulse 2s infinite;
-            background: rgba(0, 212, 255, 0.2) !important;
-            border: 1px solid var(--highlight);
+            background: rgba(0, 212, 255, 0.25) !important;
+            border-left: 5px solid var(--highlight);
+            transform: scale(1.03);
+            font-weight: bold;
         }
 
-        .past { opacity: 0.3; filter: grayscale(1); }
+        .past {
+            opacity: 0.3;
+            text-decoration: line-through;
+        }
 
-        .time-tag { color: var(--highlight); font-weight: bold; margin-right: 15px; }
-        .loc-tag { opacity: 0.6; font-size: 0.85rem; }
+        .event-time { font-weight: bold; color: var(--highlight); margin-right: 10px; }
+        .event-loc { opacity: 0.7; font-size: 0.9rem; margin-left: auto; padding-left: 15px; text-align: right;}
 
         @media (max-width: 480px) {
-            .main-timer { font-size: 3rem; }
+            .main-timer { font-size: 2.5rem; }
             .current-event-name { font-size: 1.4rem; }
+            .event-item { flex-direction: column; align-items: flex-start; text-align: left; }
+            .event-loc { margin-left: 0; padding-left: 0; text-align: left; margin-top: 5px;}
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>🚀 STEM ЦЕНТЪР 🚀</h1>
-        <p>ОУ "Св. Патриарх Евтимий", В. Търново</p>
+        <h1>🚀 ОУ "Св. Патриарх Евтимий" 🚀</h1>
+        <h3>Откриване на STEM Център - гр. Велико Търново</h3>
+        <p>27 април 2026 г.</p>
     </div>
 
     <div class="status-container">
-        <div id="status-top-label" class="label-top">В МОМЕНТА</div>
-        <div id="current-name" class="current-event-name">Зареждане...</div>
-        <div id="current-loc" class="current-location">Моля, изчакайте</div>
-        
-        <div id="status-timer-label" class="label-top" style="font-size: 0.8rem;">Оставащо време до следващата част:</div>
+        <div id="status-label" class="current-event-status">До началото остават:</div>
+        <div id="current-name" class="current-event-name">Официално посрещане</div>
         <div id="timer" class="main-timer">00:00:00</div>
-        
-        <div id="next-preview" class="next-event-preview"></div>
+        <div id="next-info" class="next-event-info">Подгответе се за старт!</div>
     </div>
 
-    <div class="schedule" id="schedule-list"></div>
+    <div class="schedule">
+        <h2 class="schedule-title">Програма на събитието</h2>
+        <div id="schedule-list">
+            </div>
+    </div>
 
     <script>
         const program = [
             { time: "2026-04-27T13:30:00", label: "Тържествено посрещане", loc: "Фоайе, главен вход" },
-            { time: "2026-04-27T13:40:00", label: "Експерименти и симулации", loc: "Етаж 2" },
+            { time: "2026-04-27T13:40:00", label: "Експерименти и симулации (Химия и Биология)", loc: "Етаж 2" },
             { time: "2026-04-27T13:50:00", label: "Математическа пекарна", loc: "Етаж 3" },
             { time: "2026-04-27T14:00:00", label: "Официално откриване на STEM център", loc: "Етаж 4" },
-            { time: "2026-04-27T14:20:00", label: "Представяне: Математика", loc: "Етаж 4" },
-            { time: "2026-04-27T14:30:00", label: "Представяне: Биология", loc: "Етаж 4" },
-            { time: "2026-04-27T14:40:00", label: "Представяне: Химия", loc: "Етаж 4" },
-            { time: "2026-04-27T14:50:00", label: "Урок: Физика на 360 градуса", loc: "Етаж 4" },
+            { time: "2026-04-27T14:20:00", label: "Представяне на кабинет по Математика", loc: "Етаж 4" },
+            { time: "2026-04-27T14:30:00", label: "Представяне на кабинет по Биология", loc: "Етаж 4" },
+            { time: "2026-04-27T14:40:00", label: "Представяне на кабинет по Химия", loc: "Етаж 4" },
+            { time: "2026-04-27T14:50:00", label: "Открит урок: Физика на 360 градуса", loc: "Етаж 4" },
             { time: "2026-04-27T15:30:00", label: "Коктейл", loc: "Етаж 2" }
         ];
 
         function updateUI() {
             const now = new Date().getTime();
+            const timerDisplay = document.getElementById('timer');
+            const statusLabel = document.getElementById('status-label');
+            const currentNameDisplay = document.getElementById('current-name');
+            const nextInfo = document.getElementById('next-info');
+            const scheduleList = document.getElementById('schedule-list');
+
             let currentIdx = -1;
-
-            for (let i = 0; i < program.length; i++) {
-                if (now >= new Date(program[i].time).getTime()) currentIdx = i;
-            }
-
-            // Обновяване на списъка
-            const list = document.getElementById('schedule-list');
-            list.innerHTML = '';
-            program.forEach((ev, i) => {
-                const item = document.createElement('div');
-                item.className = `event-item ${i === currentIdx ? 'active' : ''} ${i < currentIdx ? 'past' : ''}`;
-                item.innerHTML = `<div><span class="time-tag">${ev.time.split('T')[1].substring(0,5)}</span>${ev.label}</div><div class="loc-tag">${ev.loc}</div>`;
-                list.appendChild(item);
-            });
-
-            // Логика за статус панела
-            if (currentIdx === -1) {
-                document.getElementById('status-top-label').innerText = "Очакваме началото";
-                document.getElementById('current-name').innerText = "Добре дошли!";
-                document.getElementById('current-loc').innerText = "Събитието започва в 13:30 ч.";
-                showTimer(new Date(program[0].time).getTime() - now);
-                document.getElementById('next-preview').innerText = "Следва: " + program[0].label;
-            } else if (currentIdx < program.length - 1) {
-                document.getElementById('status-top-label').innerText = "В МОМЕНТА";
-                document.getElementById('current-name').innerText = program[currentIdx].label;
-                document.getElementById('current-loc').innerText = "📍 " + program[currentIdx].loc;
-                
-                const diff = new Date(program[currentIdx+1].time).getTime() - now;
-                showTimer(diff);
-                document.getElementById('next-preview').innerHTML = `Следва в <b>${program[currentIdx+1].time.split('T')[1].substring(0,5)}</b>: ${program[currentIdx+1].label}`;
-            } else {
-                document.getElementById('status-top-label').innerText = "ФИНАЛ";
-                document.getElementById('current-name').innerText = "Коктейл и свободна дискусия";
-                document.getElementById('current-loc').innerText = "Етаж 2";
-                document.getElementById('timer').innerText = "ГРАДИНА";
-                document.getElementById('next-preview').innerText = "Благодарим ви за присъствието!";
-            }
-        }
-
-        function showTimer(ms) {
-            const h = Math.floor(ms / 3600000);
-            const m = Math.floor((ms % 3600000) / 60000);
-            const s = Math.floor((ms % 60000) / 1000);
-            document.getElementById('timer').innerText = 
-                `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-        }
-
-        setInterval(updateUI, 1000);
-        updateUI();
-    </script>
-</body>
-</html>
+            
+            // Намиране на текущото събитие
+            for (let i = 0; i < program.length; i++)
