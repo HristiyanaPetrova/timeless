@@ -211,4 +211,65 @@
             let currentIdx = -1;
             
             // Намиране на текущото събитие
-            for (let i = 0; i < program.length; i++)
+            for (let i = 0; i < program.length; i++) {
+                const eventTime = new Date(program[i].time).getTime();
+                if (now >= eventTime) {
+                    currentIdx = i;
+                }
+            }
+
+            // Обновяване на списъка (визуално)
+            scheduleList.innerHTML = '';
+            program.forEach((event, index) => {
+                const eventTime = new Date(event.time).getTime();
+                const div = document.createElement('div');
+                div.className = 'event-item';
+                if (index === currentIdx) div.classList.add('active');
+                if (index < currentIdx) div.classList.add('past');
+                
+                const timeStr = event.time.split('T')[1].substring(0, 5);
+                div.innerHTML = `<span class="event-time">${timeStr} ч.</span> <span class="event-label">${event.label}</span> <span class="event-loc">📍 ${event.loc}</span>`;
+                scheduleList.appendChild(div);
+            });
+
+            // Логика за статус панела
+            let targetTime;
+            if (currentIdx === -1) {
+                // Преди събитието
+                statusLabel.innerText = "До началото остават:";
+                currentNameDisplay.innerText = program[0].label;
+                targetTime = new Date(program[0].time).getTime();
+                nextInfo.innerText = "📍 " + program[0].loc;
+            } else if (currentIdx < program.length - 1) {
+                // ПО ВРЕМЕ НА ПРОГРАМАТА
+                statusLabel.innerText = "В МОМЕНТА";
+                currentNameDisplay.innerText = program[currentIdx].label; // Показва името на събитието
+                
+                targetTime = new Date(program[currentIdx + 1].time).getTime(); // Брои до следващото
+                nextInfo.innerHTML = `Следва в <b>${program[currentIdx+1].time.split('T')[1].substring(0,5)} ч.</b>: ${program[currentIdx+1].label}`;
+            } else {
+                // След последното събитие
+                statusLabel.innerText = "Събитието приключи";
+                currentNameDisplay.innerText = "Благодарим ви, че бяхте с нас!";
+                timerDisplay.innerText = "--:--:--";
+                nextInfo.innerText = "До нови срещи!";
+                return;
+            }
+
+            const diff = targetTime - now;
+            if (diff <= 0) { updateUI(); return; } // prevent negative values during update
+
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+            // Големият таймер показва оставащото време (до началото или до следващото събитие)
+            timerDisplay.innerText = 
+                `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        setInterval(updateUI, 1000);
+        updateUI(); // Initial run
+    </script>
+</body>
+</html>
