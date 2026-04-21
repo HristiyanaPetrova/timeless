@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STEM Център - ОУ "Св. Патриарх Евтимий"</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark-blue: #1a2a5a;
+            --accent-blue: #3a5ba0;
+            --white: #ffffff;
+            --highlight: #00d4ff;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--white);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--highlight);
+            padding-bottom: 10px;
+        }
+
+        .main-timer {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--highlight);
+            text-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+            margin: 20px 0;
+        }
+
+        .status-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .current-event {
+            font-size: 1.5rem;
+            color: #5eead4;
+            margin-bottom: 10px;
+        }
+
+        .next-event-info {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-top: 15px;
+        }
+
+        .schedule {
+            margin-top: 40px;
+            width: 90%;
+            max-width: 600px;
+        }
+
+        .event-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: 0.3s;
+        }
+
+        .active {
+            background: rgba(0, 212, 255, 0.2);
+            border-left: 4px solid var(--highlight);
+            transform: scale(1.02);
+        }
+
+        .past {
+            opacity: 0.4;
+            text-decoration: line-through;
+        }
+
+        @media (max-width: 480px) {
+            .main-timer { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>ОУ "Св. Патриарх Евтимий"</h1>
+        <h3>Откриване на STEM Център - гр. Велико Търново</h3>
+        <p>27 април 2026 г.</p>
+    </div>
+
+    <div class="status-container">
+        <div id="status-label" class="current-event">Оставащо време до началото:</div>
+        <div id="timer" class="main-timer">00:00:00</div>
+        <div id="next-info" class="next-event-info">Подгответе се за официалното посрещане!</div>
+    </div>
+
+    <div class="schedule" id="schedule-list">
+        </div>
+
+    <script>
+        const program = [
+            { time: "2026-04-27T13:30:00", label: "Тържествено посрещане", loc: "Фоайе, главен вход" },
+            { time: "2026-04-27T13:40:00", label: "Експерименти и симулации (Химия и Биология)", loc: "Етаж 2" },
+            { time: "2026-04-27T13:50:00", label: "Математическа пекарна", loc: "Етаж 3" },
+            { time: "2026-04-27T14:00:00", label: "Официално откриване на STEM център", loc: "Етаж 4" },
+            { time: "2026-04-27T14:20:00", label: "Представяне на кабинет по Математика", loc: "Етаж 4" },
+            { time: "2026-04-27T14:30:00", label: "Представяне на кабинет по Биология", loc: "Етаж 4" },
+            { time: "2026-04-27T14:40:00", label: "Представяне на кабинет по Химия", loc: "Етаж 4" },
+            { time: "2026-04-27T14:50:00", label: "Открит урок: Физика на 360 градуса", loc: "Етаж 4" },
+            { time: "2026-04-27T15:30:00", label: "Коктейл", loc: "Етаж 2" }
+        ];
+
+        function updateUI() {
+            const now = new Date().getTime();
+            const timerDisplay = document.getElementById('timer');
+            const statusLabel = document.getElementById('status-label');
+            const nextInfo = document.getElementById('next-info');
+            const scheduleList = document.getElementById('schedule-list');
+
+            let currentIdx = -1;
+            
+            // Намиране на текущото събитие
+            for (let i = 0; i < program.length; i++) {
+                const eventTime = new Date(program[i].time).getTime();
+                if (now >= eventTime) {
+                    currentIdx = i;
+                }
+            }
+
+            // Обновяване на списъка (визуално)
+            scheduleList.innerHTML = '';
+            program.forEach((event, index) => {
+                const eventTime = new Date(event.time).getTime();
+                const div = document.createElement('div');
+                div.className = 'event-item';
+                if (index === currentIdx) div.classList.add('active');
+                if (index < currentIdx) div.classList.add('past');
+                
+                const timeStr = event.time.split('T')[1].substring(0, 5);
+                div.innerHTML = `<span>${timeStr} - ${event.label}</span> <span>${event.loc}</span>`;
+                scheduleList.appendChild(div);
+            });
+
+            // Логика за брояча
+            let targetTime;
+            if (currentIdx === -1) {
+                // Преди събитието
+                statusLabel.innerText = "До началото остават:";
+                targetTime = new Date(program[0].time).getTime();
+                nextInfo.innerText = "Следва: " + program[0].label;
+            } else if (currentIdx < program.length - 1) {
+                // По време на програмата
+                statusLabel.innerText = "В МОМЕНТА: " + program[currentIdx].label;
+                targetTime = new Date(program[currentIdx + 1].time).getTime();
+                nextInfo.innerText = "Следва в " + program[currentIdx+1].time.split('T')[1].substring(0,5) + ": " + program[currentIdx+1].label;
+            } else {
+                // След последното събитие
+                statusLabel.innerText = "Събитието приключи";
+                timerDisplay.innerText = "--:--:--";
+                nextInfo.innerText = "Благодарим ви, че бяхте с нас!";
+                return;
+            }
+
+            const diff = targetTime - now;
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+            timerDisplay.innerText = 
+                `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        setInterval(updateUI, 1000);
+        updateUI();
+    </script>
+</body>
+</html>
