@@ -3,24 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STEM Център - ОУ "Св. Патриарх Евтимий"</title>
+    <title>STEM Център - В. Търново</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --dark-blue: #1a2a5a;
-            --white: #ffffff;
+            --dark-blue: #0f172a;
             --highlight: #00d4ff;
             --success: #5eead4;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.4); }
-            70% { box-shadow: 0 0 0 12px rgba(0, 212, 255, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0); }
+            --white: #ffffff;
         }
 
         body {
             font-family: 'Montserrat', sans-serif;
+            background: #0f172a; /* Солиден цвят за начало, за да няма бял екран */
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             color: var(--white);
             margin: 0;
@@ -29,88 +24,64 @@
             align-items: center;
             min-height: 100vh;
             padding: 20px;
-            overflow-x: hidden;
         }
 
-        /* Декоративни елементи */
-        .rocket-icon { font-size: 2rem; margin: 0 10px; }
+        .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid var(--highlight); width: 100%; max-width: 600px; }
         
-        .header {
-            text-align: center;
-            margin-bottom: 25px;
-            border-bottom: 2px solid var(--highlight);
-            padding-bottom: 10px;
-        }
-
-        .status-container {
-            background: rgba(255, 255, 255, 0.08);
+        .status-box {
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
+            border-radius: 15px;
+            padding: 20px;
             width: 90%;
             max-width: 600px;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
             border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .status-top { font-size: 0.9rem; letter-spacing: 2px; opacity: 0.8; text-transform: uppercase; }
-        
-        .event-now { 
-            font-size: 1.8rem; 
-            font-weight: bold; 
-            color: var(--success); 
-            margin: 10px 0; 
-            display: block; 
-        }
-
-        .main-timer {
+        #timer {
             font-size: 3.5rem;
-            font-weight: 700;
-            text-shadow: 0 0 15px var(--highlight);
-            margin: 15px 0;
-            font-variant-numeric: tabular-nums;
+            font-weight: bold;
+            text-shadow: 0 0 10px var(--highlight);
+            margin: 10px 0;
         }
 
-        .schedule { margin-top: 40px; width: 90%; max-width: 600px; }
+        .current-name { font-size: 1.5rem; color: var(--success); font-weight: bold; }
+
+        .schedule { margin-top: 30px; width: 90%; max-width: 600px; }
 
         .event-item {
             display: flex;
             justify-content: space-between;
-            padding: 15px;
-            margin-bottom: 10px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 12px;
-            transition: 0.4s;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
         }
 
-        .active {
-            animation: pulse 2s infinite;
-            background: rgba(0, 212, 255, 0.2) !important;
+        .active { 
+            background: rgba(0, 212, 255, 0.2) !important; 
             border: 1px solid var(--highlight);
             transform: scale(1.02);
         }
 
-        .past { opacity: 0.25; filter: grayscale(1); }
+        .past { opacity: 0.3; }
 
-        .time-box { color: var(--highlight); font-weight: bold; min-width: 80px; }
-        .loc-box { opacity: 0.6; font-size: 0.85rem; text-align: right; }
-
+        @media (max-width: 480px) { #timer { font-size: 2.5rem; } }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1><span class="rocket-icon">🚀</span> STEM ЦЕНТЪР <span class="rocket-icon">🚀</span></h1>
-        <h3>ОУ "Св. Патриарх Евтимий", гр. В. Търново</h3>
-        <p>27 април 2026 г.</p>
+        <h1>🚀 STEM ЦЕНТЪР 🚀</h1>
+        <p>ОУ "Св. Патриарх Евтимий", гр. В. Търново</p>
     </div>
 
-    <div class="status-container">
-        <div id="label-top" class="status-top">Зареждане...</div>
-        <div id="current-name" class="event-now">Моля, изчакайте</div>
-        <div id="timer" class="main-timer">00:00:00</div>
-        <div id="next-preview" style="font-size: 0.9rem; opacity: 0.8;"></div>
+    <div class="status-box">
+        <div id="status-label" style="text-transform: uppercase; font-size: 0.8rem;">Зареждане...</div>
+        <div id="current-name" class="current-name">Моля, изчакайте</div>
+        <div id="timer">00:00:00</div>
+        <div id="next-preview" style="font-size: 0.9rem; opacity: 0.8; margin-top: 10px;"></div>
     </div>
 
     <div class="schedule" id="schedule-list">
@@ -118,31 +89,25 @@
 
     <script>
         const program = [
-            { time: "2026-04-27T13:30:00", label: "Тържествено посрещане", loc: "Фоайе" },
-            { time: "2026-04-27T13:40:00", label: "Експерименти и симулации", loc: "Етаж 2" },
-            { time: "2026-04-27T13:50:00", label: "Математическа пекарна", loc: "Етаж 3" },
-            { time: "2026-04-27T14:00:00", label: "Официално откриване", loc: "Етаж 4" },
-            { time: "2026-04-27T14:20:00", label: "Зона за Математика", loc: "Етаж 4" },
-            { time: "2026-04-27T14:30:00", label: "Зона за Биология", loc: "Етаж 4" },
-            { time: "2026-04-27T14:40:00", label: "Зона за Химия", loc: "Етаж 4" },
-            { time: "2026-04-27T14:50:00", label: "Урок: Физика на 360°", loc: "Етаж 4" },
-            { time: "2026-04-27T15:30:00", label: "Коктейл", loc: "Етаж 2" }
+            { id: 0, time: "2026-04-27T13:30:00", label: "Тържествено посрещане", loc: "Фоайе" },
+            { id: 1, time: "2026-04-27T13:40:00", label: "Експерименти и симулации", loc: "Етаж 2" },
+            { id: 2, time: "2026-04-27T13:50:00", label: "Математическа пекарна", loc: "Етаж 3" },
+            { id: 3, time: "2026-04-27T14:00:00", label: "Официално откриване", loc: "Етаж 4" },
+            { id: 4, time: "2026-04-27T14:20:00", label: "Зона за Математика", loc: "Етаж 4" },
+            { id: 5, time: "2026-04-27T14:30:00", label: "Зона за Биология", loc: "Етаж 4" },
+            { id: 6, time: "2026-04-27T14:40:00", label: "Зона за Химия", loc: "Етаж 4" },
+            { id: 7, time: "2026-04-27T14:50:00", label: "Урок: Физика на 360°", loc: "Етаж 4" },
+            { id: 8, time: "2026-04-27T15:30:00", label: "Коктейл", loc: "Етаж 2" }
         ];
 
-        function init() {
-            // 1. Генериране на програмата веднага
-            const list = document.getElementById('schedule-list');
-            list.innerHTML = program.map((ev, i) => `
-                <div class="event-item" id="ev-${i}">
-                    <div class="time-box">${ev.time.split('T')[1].substring(0,5)} ч.</div>
-                    <div style="flex-grow:1; margin:0 10px;">${ev.label}</div>
-                    <div class="loc-box">${ev.loc}</div>
+        function renderSchedule() {
+            const container = document.getElementById('schedule-list');
+            container.innerHTML = program.map(ev => `
+                <div class="event-item" id="item-${ev.id}">
+                    <span><b>${ev.time.split('T')[1].substring(0,5)}</b> - ${ev.label}</span>
+                    <span style="opacity:0.6">${ev.loc}</span>
                 </div>
             `).join('');
-
-            // 2. Стартиране на брояча
-            update();
-            setInterval(update, 1000);
         }
 
         function update() {
@@ -151,51 +116,57 @@
 
             program.forEach((ev, i) => {
                 const evTime = new Date(ev.time).getTime();
-                const item = document.getElementById(`ev-${i}`);
-                
-                item.classList.remove('active', 'past');
-                if (now >= evTime) {
-                    currentIdx = i;
-                    item.classList.add('past');
+                const el = document.getElementById('item-' + i);
+                if (el) {
+                    el.classList.remove('active', 'past');
+                    if (now >= evTime) {
+                        currentIdx = i;
+                        el.classList.add('past');
+                    }
                 }
             });
 
-            if (currentIdx !== -1) document.getElementById(`ev-${currentIdx}`).className = 'event-item active';
+            if (currentIdx !== -1) {
+                const activeEl = document.getElementById('item-' + currentIdx);
+                if (activeEl) activeEl.className = 'event-item active';
+            }
 
-            const timerEl = document.getElementById('timer');
-            const labelTop = document.getElementById('label-top');
-            const currentName = document.getElementById('current-name');
-            const nextPre = document.getElementById('next-preview');
+            const label = document.getElementById('status-label');
+            const name = document.getElementById('current-name');
+            const timer = document.getElementById('timer');
+            const next = document.getElementById('next-preview');
 
             if (currentIdx === -1) {
-                labelTop.innerText = "До началото остават:";
-                currentName.innerText = "Очакваме Ви!";
-                countdown(new Date(program[0].time).getTime() - now);
-                nextPre.innerText = "Първо събитие: " + program[0].label;
+                label.innerText = "До началото остават:";
+                name.innerText = "Добре дошли!";
+                const diff = new Date(program[0].time).getTime() - now;
+                timer.innerText = formatTime(diff);
+                next.innerText = "Начало: " + program[0].label;
             } else if (currentIdx < program.length - 1) {
-                labelTop.innerText = "В момента:";
-                currentName.innerText = program[currentIdx].label;
+                label.innerText = "В МОМЕНТА:";
+                name.innerText = program[currentIdx].label;
                 const diff = new Date(program[currentIdx+1].time).getTime() - now;
-                countdown(diff);
-                nextPre.innerHTML = `Следва в <b>${program[currentIdx+1].time.split('T')[1].substring(0,5)}</b>: ${program[currentIdx+1].label}`;
+                timer.innerText = formatTime(diff);
+                next.innerHTML = "Следва: " + program[currentIdx+1].label;
             } else {
-                labelTop.innerText = "Статус:";
-                currentName.innerText = "Коктейл и разговори";
-                timerEl.innerText = "ФИНАЛ";
-                nextPre.innerText = "Благодарим за присъствието!";
+                label.innerText = "Статус:";
+                name.innerText = "Коктейл";
+                timer.innerText = "ФИНАЛ";
+                next.innerText = "Благодарим ви!";
             }
         }
 
-        function countdown(ms) {
+        function formatTime(ms) {
             const h = Math.floor(ms / 3600000);
             const m = Math.floor((ms % 3600000) / 60000);
             const s = Math.floor((ms % 60000) / 1000);
-            document.getElementById('timer').innerText = 
-                `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
         }
 
-        // Ключовият момент: Стартирай само когато всичко е готово
-        window.onload = init;
+        // Изпълняваме веднага
+        renderSchedule();
+        update();
+        setInterval(update, 1000);
     </script>
 </body>
 </html>
