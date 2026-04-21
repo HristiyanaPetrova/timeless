@@ -3,51 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STEM Център</title>
+    <title>STEM Център - В. Търново</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --highlight: #00d4ff;
+            --success: #5eead4;
+            --white: #ffffff;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background: #0f172a;
-            color: white;
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-color);
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--white);
             margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 100vh;
             padding: 20px;
+            /* Първоначално крием всичко, за да няма премигване */
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
         }
-        .container {
-            width: 100%;
-            max-width: 500px;
+
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { margin-bottom: 5px; font-size: 2rem; }
+
+        .status-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 40px 20px;
+            width: 90%;
+            max-width: 600px;
             text-align: center;
-            background: rgba(255,255,255,0.1);
-            padding: 20px;
-            border-radius: 15px;
-            border: 1px solid #00d4ff;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 40px;
         }
-        #timer { font-size: 3rem; font-weight: bold; color: #00d4ff; margin: 20px 0; }
+
+        .status-label { text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem; opacity: 0.7; }
+        .current-msg { font-size: 1.8rem; font-weight: bold; color: var(--success); margin: 15px 0; }
+        
+        #timer {
+            font-size: 4.5rem;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+            margin: 10px 0;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .next-info { font-size: 1rem; opacity: 0.6; margin-top: 15px; }
+
+        .schedule { width: 90%; max-width: 600px; }
         .event-item {
-            background: rgba(255,255,255,0.05);
-            margin: 5px 0;
-            padding: 10px;
-            border-radius: 5px;
             display: flex;
             justify-content: space-between;
+            padding: 18px;
+            margin-bottom: 12px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            transition: 0.3s;
         }
-        .active { background: #3a5ba0 !important; border: 1px solid #5eead4; }
-        .past { opacity: 0.3; }
+
+        .active {
+            background: rgba(0, 212, 255, 0.15) !important;
+            border: 1px solid var(--highlight);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+        }
+
+        .past { opacity: 0.2; filter: grayscale(1); }
+        .time-tag { color: var(--highlight); font-weight: bold; margin-right: 15px; }
+
+        @media (max-width: 480px) {
+            #timer { font-size: 3rem; }
+            .current-msg { font-size: 1.4rem; }
+        }
     </style>
 </head>
 <body>
 
-    <h1>🚀 STEM ЦЕНТЪР 🚀</h1>
-    
-    <div class="container">
-        <div id="status">Зареждане...</div>
-        <div id="current-name" style="font-size: 1.2rem; font-weight: bold; color: #5eead4;">Моля, изчакайте...</div>
-        <div id="timer">00:00:00</div>
+    <div class="header">
+        <h1>🚀 STEM ЦЕНТЪР 🚀</h1>
+        <div style="opacity: 0.8;">ОУ "Св. Патриарх Евтимий", гр. В. Търново</div>
+        <div style="font-size: 0.9rem; margin-top: 5px;">27 април 2026 г.</div>
     </div>
 
-    <div id="schedule" style="width:100%; max-width:500px; margin-top:20px;"></div>
+    <div class="status-card">
+        <div id="label-top" class="status-label">До началото остават:</div>
+        <div id="current-name" class="current-msg">Зареждане...</div>
+        <div id="timer">00:00:00</div>
+        <div id="next-preview" class="next-info"></div>
+    </div>
+
+    <div class="schedule" id="schedule-list"></div>
 
     <script>
         const program = [
@@ -55,67 +108,75 @@
             { t: "2026-04-27T13:40:00", n: "Експерименти (Химия и Биол.)", l: "Етаж 2" },
             { t: "2026-04-27T13:50:00", n: "Математическа пекарна", l: "Етаж 3" },
             { t: "2026-04-27T14:00:00", n: "Официално откриване", l: "Етаж 4" },
-            { t: "2026-04-27T14:20:00", n: "Зона Математика", l: "Етаж 4" },
-            { t: "2026-04-27T14:30:00", n: "Зона Биология", l: "Етаж 4" },
-            { t: "2026-04-27T14:40:00", n: "Зона Химия", l: "Етаж 4" },
-            { t: "2026-04-27T14:50:00", n: "Урок Физика 360°", l: "Етаж 4" },
+            { t: "2026-04-27T14:20:00", n: "Зона за Математика", l: "Етаж 4" },
+            { t: "2026-04-27T14:30:00", n: "Зона за Биология", l: "Етаж 4" },
+            { t: "2026-04-27T14:40:00", n: "Зона за Химия", l: "Етаж 4" },
+            { t: "2026-04-27T14:50:00", n: "Урок: Физика на 360°", l: "Етаж 4" },
             { t: "2026-04-27T15:30:00", n: "Коктейл", l: "Етаж 2" }
         ];
 
         function update() {
-            try {
-                const now = new Date().getTime();
-                const schedDiv = document.getElementById('schedule');
-                let html = '';
-                let currentIdx = -1;
+            const now = new Date().getTime();
+            let currentIdx = -1;
 
-                program.forEach((ev, i) => {
-                    const start = new Date(ev.t).getTime();
-                    if (now >= start) currentIdx = i;
-                    
-                    let cls = 'event-item';
-                    if (now >= start) cls += ' past';
-                    html += `<div class="${cls}" id="i${i}"><span>${ev.t.split('T')[1].substring(0,5)} - ${ev.n}</span><span>${ev.l}</span></div>`;
-                });
-                schedDiv.innerHTML = html;
+            // 1. Изчисляваме коя е текущата позиция
+            program.forEach((ev, i) => {
+                if (now >= new Date(ev.t).getTime()) currentIdx = i;
+            });
 
-                if (currentIdx !== -1) {
-                    const activeRow = document.getElementById('i' + currentIdx);
-                    if (activeRow) activeRow.className = 'event-item active';
-                }
+            // 2. Обновяваме списъка
+            const list = document.getElementById('schedule-list');
+            list.innerHTML = program.map((ev, i) => {
+                let cls = 'event-item';
+                if (i === currentIdx) cls += ' active';
+                if (i < currentIdx) cls += ' past';
+                return `
+                    <div class="${cls}">
+                        <span><span class="time-tag">${ev.t.split('T')[1].substring(0,5)} ч.</span> ${ev.n}</span>
+                        <span style="opacity:0.6; font-size:0.9rem;">${ev.l}</span>
+                    </div>
+                `;
+            }).join('');
 
-                const timer = document.getElementById('timer');
-                const status = document.getElementById('status');
-                const cName = document.getElementById('current-name');
+            // 3. Обновяваме голямата карта
+            const label = document.getElementById('label-top');
+            const name = document.getElementById('current-name');
+            const timer = document.getElementById('timer');
+            const next = document.getElementById('next-preview');
 
-                if (currentIdx === -1) {
-                    status.innerText = "До началото остават:";
-                    cName.innerText = program[0].n;
-                    const diff = new Date(program[0].t).getTime() - now;
-                    timer.innerText = fmt(diff);
-                } else if (currentIdx < program.length - 1) {
-                    status.innerText = "В МОМЕНТА:";
-                    cName.innerText = program[currentIdx].n;
-                    const diff = new Date(program[currentIdx+1].t).getTime() - now;
-                    timer.innerText = fmt(diff);
-                } else {
-                    status.innerText = "Събитието приключи";
-                    cName.innerText = "Благодарим ви!";
-                    timer.innerText = "ФИНАЛ";
-                }
-            } catch (e) { console.error(e); }
+            if (currentIdx === -1) {
+                label.innerText = "До началото остават:";
+                name.innerText = "Очакваме Ви!";
+                const diff = new Date(program[0].t).getTime() - now;
+                timer.innerText = format(diff);
+                next.innerText = "Първо събитие: " + program[0].n;
+            } else if (currentIdx < program.length - 1) {
+                label.innerText = "В МОМЕНТА:";
+                name.innerText = program[currentIdx].n;
+                const diff = new Date(program[currentIdx+1].t).getTime() - now;
+                timer.innerText = format(diff);
+                next.innerHTML = `Следва в <b>${program[currentIdx+1].t.split('T')[1].substring(0,5)}</b>: ${program[currentIdx+1].n}`;
+            } else {
+                label.innerText = "Статус:";
+                name.innerText = "Коктейл и разговори";
+                timer.innerText = "ФИНАЛ";
+                next.innerText = "Благодарим ви, че бяхте с нас!";
+            }
+            
+            // Показваме страницата, след като всичко е изчислено
+            document.body.style.opacity = "1";
         }
 
-        function fmt(ms) {
+        function format(ms) {
             const h = Math.floor(ms / 3600000);
             const m = Math.floor((ms % 3600000) / 60000);
             const s = Math.floor((ms % 60000) / 1000);
             return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
         }
 
-        // Най-сигурният начин за стартиране
-        setInterval(update, 1000);
+        // Стартираме веднага
         update();
+        setInterval(update, 1000);
     </script>
 </body>
 </html>
