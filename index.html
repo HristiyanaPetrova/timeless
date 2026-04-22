@@ -8,7 +8,7 @@
     <style>
         :root {
             --dark-blue: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.8);
+            --card-bg: rgba(30, 41, 59, 0.85);
             --highlight: #00d4ff;
             --success: #5eead4;
             --white: #ffffff;
@@ -27,9 +27,7 @@
         }
 
         .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid var(--highlight); padding-bottom: 15px; width: 100%; max-width: 600px; }
-        .header h1 { margin: 0; font-size: 1.8rem; letter-spacing: 1px; }
-        .header p { margin: 5px 0 0; opacity: 0.8; font-size: 0.9rem; }
-
+        
         .status-card {
             background: var(--card-bg);
             backdrop-filter: blur(12px);
@@ -44,18 +42,15 @@
         }
 
         .status-label { text-transform: uppercase; letter-spacing: 2px; font-size: 0.85rem; opacity: 0.7; }
-        .current-name { font-size: 1.6rem; font-weight: bold; color: var(--success); margin: 15px 0; line-height: 1.2; }
+        .current-name { font-size: 1.4rem; font-weight: bold; color: var(--success); margin: 15px 0; line-height: 1.3; min-height: 3.5rem; display: flex; align-items: center; justify-content: center; }
         
         #timer {
             font-size: 4rem;
             font-weight: 700;
-            color: var(--white);
             text-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
             margin: 10px 0;
             font-variant-numeric: tabular-nums;
         }
-
-        .next-info { font-size: 0.95rem; opacity: 0.7; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
 
         .schedule { width: 95%; max-width: 600px; }
         .event-item {
@@ -66,24 +61,23 @@
             margin-bottom: 10px;
             background: rgba(255,255,255,0.04);
             border-radius: 12px;
-            transition: 0.3s;
+            border-left: 4px solid transparent;
         }
 
         .active {
             background: rgba(0, 212, 255, 0.15) !important;
-            border: 1px solid var(--highlight);
+            border-left-color: var(--highlight);
             transform: scale(1.02);
         }
 
         .past { opacity: 0.25; filter: grayscale(1); }
         .time-tag { color: var(--highlight); font-weight: bold; margin-right: 12px; white-space: nowrap; }
-        .loc-tag { opacity: 0.5; font-size: 0.8rem; text-align: right; margin-left: 10px; }
+        .loc-tag { opacity: 0.5; font-size: 0.8rem; text-align: right; min-width: 70px; }
 
         @media (max-width: 480px) {
             #timer { font-size: 3rem; }
-            .current-name { font-size: 1.3rem; }
             .event-item { flex-direction: column; align-items: flex-start; }
-            .loc-tag { text-align: left; margin-left: 0; margin-top: 5px; }
+            .loc-tag { margin-top: 5px; text-align: left; }
         }
     </style>
 </head>
@@ -98,27 +92,25 @@
         <div id="label-top" class="status-label">До началото остават:</div>
         <div id="current-name" class="current-name">Зареждане...</div>
         <div id="timer">00:00:00</div>
-        <div id="next-preview" class="next-info"></div>
+        <div id="next-preview" style="font-size: 0.9rem; opacity: 0.6; margin-top: 15px;"></div>
     </div>
 
-    <div class="schedule" id="schedule-list">
-        </div>
+    <div class="schedule" id="schedule-list"></div>
 
     <script>
-        // ДАННИ ОТ ПЛАКАРА
         const program = [
-            { t: "2026-04-27T13:30:00", n: "Тържествено посрещане", l: "Фоайе, главен вход" },
-            { t: "2026-04-27T13:40:00", n: "Химия и Биология: експерименти и симулации", l: "Етаж 2" },
-            { t: "2026-04-27T13:50:00", n: "Математика и Физика: математическа пекарна", l: "Етаж 3" },
-            { t: "2026-04-27T14:00:00", n: "Официално откриване на STEM център", l: "Етаж 4" },
-            { t: "2026-04-27T14:20:00", n: "Посещение на Зона за Математика", l: "Етаж 4" },
-            { t: "2026-04-27T14:30:00", n: "Посещение на Зона за Биология", l: "Етаж 4" },
-            { t: "2026-04-27T14:40:00", n: "Посещение на Зона за Химия", l: "Етаж 4" },
-            { t: "2026-04-27T14:50:00", n: "Урок Физика: Посещение на Зона за Физика", l: "Етаж 4" },
-            { t: "2026-04-27T15:30:00", n: "Коктейл", l: "Етаж 2" }
+            { t: "2026-04-27T13:30:00", n: "Тържествено посрещане", l: "ФОАЙЕ" },
+            { t: "2026-04-27T13:40:00", n: "Химия и Биология: експерименти и симулации", l: "ЕТАЖ 2" },
+            { t: "2026-04-27T13:50:00", n: "Математика и Физика: математическа пекарна", l: "ЕТАЖ 3" },
+            { t: "2026-04-27T14:00:00", n: "Откриване на STEM център", l: "ЕТАЖ 4" },
+            { t: "2026-04-27T14:20:00", n: "Посещение на Зона за генериране на идеи и проучване", l: "ЕТАЖ 4" },
+            { t: "2026-04-27T14:30:00", n: "Посещение на Креативна зона за анализ и моделиране", l: "ЕТАЖ 4" },
+            { t: "2026-04-27T14:40:00", n: "Посещение на Практическа и специална лаборатория", l: "ЕТАЖ 4" },
+            { t: "2026-04-27T14:50:00", n: "Посещение на Зона за симулации и експерименти, урок Физика на 360", l: "ЕТАЖ 4" },
+            { t: "2026-04-27T15:30:00", n: "Коктейл", l: "ЕТАЖ 2" }
         ];
 
-        function update() {
+        function updateUI() {
             const now = new Date().getTime();
             let currentIdx = -1;
 
@@ -149,7 +141,7 @@
                 name.innerText = "Очакваме Ви!";
                 const diff = new Date(program[0].t).getTime() - now;
                 timer.innerText = format(diff);
-                next.innerText = "Начало в 13:30 ч. с: " + program[0].n;
+                next.innerText = "Следва: " + program[0].n;
             } else if (currentIdx < program.length - 1) {
                 label.innerText = "В МОМЕНТА:";
                 name.innerText = program[currentIdx].n;
@@ -157,10 +149,10 @@
                 timer.innerText = format(diff);
                 next.innerHTML = `Следва в <b>${program[currentIdx+1].t.split('T')[1].substring(0,5)} ч.</b>: ${program[currentIdx+1].n}`;
             } else {
-                label.innerText = "Статус:";
+                label.innerText = "СТАТУС:";
                 name.innerText = "Коктейл и свободна дискусия";
                 timer.innerText = "ФИНАЛ";
-                next.innerText = "Благодарим Ви, че бяхте част от нашия празник!";
+                next.innerText = "Благодарим Ви за присъствието!";
             }
         }
 
@@ -171,8 +163,8 @@
             return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
         }
 
-        update();
-        setInterval(update, 1000);
+        updateUI();
+        setInterval(updateUI, 1000);
     </script>
 </body>
 </html>
