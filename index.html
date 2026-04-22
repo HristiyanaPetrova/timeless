@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STEM Център - В. Търново</title>
+    <title>STEM Център - ОУ "Св. Патриарх Евтимий"</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.7);
+            --dark-blue: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.8);
             --highlight: #00d4ff;
             --success: #5eead4;
             --white: #ffffff;
@@ -16,7 +16,6 @@
 
         body {
             font-family: 'Montserrat', sans-serif;
-            background-color: var(--bg-color);
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             color: var(--white);
             margin: 0;
@@ -25,47 +24,47 @@
             align-items: center;
             min-height: 100vh;
             padding: 20px;
-            /* Първоначално крием всичко, за да няма премигване */
-            opacity: 0;
-            transition: opacity 0.5s ease-in;
         }
 
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { margin-bottom: 5px; font-size: 2rem; }
+        .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid var(--highlight); padding-bottom: 15px; width: 100%; max-width: 600px; }
+        .header h1 { margin: 0; font-size: 1.8rem; letter-spacing: 1px; }
+        .header p { margin: 5px 0 0; opacity: 0.8; font-size: 0.9rem; }
 
         .status-card {
             background: var(--card-bg);
-            backdrop-filter: blur(10px);
-            border-radius: 24px;
-            padding: 40px 20px;
-            width: 90%;
+            backdrop-filter: blur(12px);
+            border-radius: 25px;
+            padding: 35px 20px;
+            width: 95%;
             max-width: 600px;
             text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
             border: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 40px;
+            margin-bottom: 35px;
         }
 
-        .status-label { text-transform: uppercase; letter-spacing: 2px; font-size: 0.9rem; opacity: 0.7; }
-        .current-msg { font-size: 1.8rem; font-weight: bold; color: var(--success); margin: 15px 0; }
+        .status-label { text-transform: uppercase; letter-spacing: 2px; font-size: 0.85rem; opacity: 0.7; }
+        .current-name { font-size: 1.6rem; font-weight: bold; color: var(--success); margin: 15px 0; line-height: 1.2; }
         
         #timer {
-            font-size: 4.5rem;
+            font-size: 4rem;
             font-weight: 700;
-            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+            color: var(--white);
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
             margin: 10px 0;
             font-variant-numeric: tabular-nums;
         }
 
-        .next-info { font-size: 1rem; opacity: 0.6; margin-top: 15px; }
+        .next-info { font-size: 0.95rem; opacity: 0.7; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
 
-        .schedule { width: 90%; max-width: 600px; }
+        .schedule { width: 95%; max-width: 600px; }
         .event-item {
             display: flex;
             justify-content: space-between;
-            padding: 18px;
-            margin-bottom: 12px;
-            background: rgba(255,255,255,0.03);
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: rgba(255,255,255,0.04);
             border-radius: 12px;
             transition: 0.3s;
         }
@@ -73,15 +72,18 @@
         .active {
             background: rgba(0, 212, 255, 0.15) !important;
             border: 1px solid var(--highlight);
-            box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+            transform: scale(1.02);
         }
 
-        .past { opacity: 0.2; filter: grayscale(1); }
-        .time-tag { color: var(--highlight); font-weight: bold; margin-right: 15px; }
+        .past { opacity: 0.25; filter: grayscale(1); }
+        .time-tag { color: var(--highlight); font-weight: bold; margin-right: 12px; white-space: nowrap; }
+        .loc-tag { opacity: 0.5; font-size: 0.8rem; text-align: right; margin-left: 10px; }
 
         @media (max-width: 480px) {
             #timer { font-size: 3rem; }
-            .current-msg { font-size: 1.4rem; }
+            .current-name { font-size: 1.3rem; }
+            .event-item { flex-direction: column; align-items: flex-start; }
+            .loc-tag { text-align: left; margin-left: 0; margin-top: 5px; }
         }
     </style>
 </head>
@@ -89,29 +91,30 @@
 
     <div class="header">
         <h1>🚀 STEM ЦЕНТЪР 🚀</h1>
-        <div style="opacity: 0.8;">ОУ "Св. Патриарх Евтимий", гр. В. Търново</div>
-        <div style="font-size: 0.9rem; margin-top: 5px;">27 април 2026 г.</div>
+        <p>ОУ "Св. Патриарх Евтимий" | 27.04.2026 г.</p>
     </div>
 
     <div class="status-card">
         <div id="label-top" class="status-label">До началото остават:</div>
-        <div id="current-name" class="current-msg">Зареждане...</div>
+        <div id="current-name" class="current-name">Зареждане...</div>
         <div id="timer">00:00:00</div>
         <div id="next-preview" class="next-info"></div>
     </div>
 
-    <div class="schedule" id="schedule-list"></div>
+    <div class="schedule" id="schedule-list">
+        </div>
 
     <script>
+        // ДАННИ ОТ ПЛАКАРА
         const program = [
-            { t: "2026-04-27T13:30:00", n: "Тържествено посрещане", l: "Фоайе" },
-            { t: "2026-04-27T13:40:00", n: "Експерименти и симулации (Химия и Биол.)", l: "Етаж 2" },
-            { t: "2026-04-27T13:50:00", n: "Математическа пекарна (Матемитаки и Физика)", l: "Етаж 3" },
-            { t: "2026-04-27T14:00:00", n: "Официално откриване", l: "Етаж 4" },
-            { t: "2026-04-27T14:20:00", n: "Зона за генериране на идеи и проучвания", l: "Етаж 4" },
-            { t: "2026-04-27T14:30:00", n: "Креативна зона за анализ и моделиране", l: "Етаж 4" },
-            { t: "2026-04-27T14:40:00", n: "Практическа и специална лаборатория", l: "Етаж 4" },
-            { t: "2026-04-27T14:50:00", n: "Зона за симулации и експерименти. Урок: Физика на 360°", l: "Етаж 4" },
+            { t: "2026-04-27T13:30:00", n: "Тържествено посрещане", l: "Фоайе, главен вход" },
+            { t: "2026-04-27T13:40:00", n: "Химия и Биология: експерименти и симулации", l: "Етаж 2" },
+            { t: "2026-04-27T13:50:00", n: "Математика и Физика: математическа пекарна", l: "Етаж 3" },
+            { t: "2026-04-27T14:00:00", n: "Официално откриване на STEM център", l: "Етаж 4" },
+            { t: "2026-04-27T14:20:00", n: "Посещение на Зона за Математика", l: "Етаж 4" },
+            { t: "2026-04-27T14:30:00", n: "Посещение на Зона за Биология", l: "Етаж 4" },
+            { t: "2026-04-27T14:40:00", n: "Посещение на Зона за Химия", l: "Етаж 4" },
+            { t: "2026-04-27T14:50:00", n: "Урок Физика: Посещение на Зона за Физика", l: "Етаж 4" },
             { t: "2026-04-27T15:30:00", n: "Коктейл", l: "Етаж 2" }
         ];
 
@@ -119,12 +122,10 @@
             const now = new Date().getTime();
             let currentIdx = -1;
 
-            // 1. Изчисляваме коя е текущата позиция
             program.forEach((ev, i) => {
                 if (now >= new Date(ev.t).getTime()) currentIdx = i;
             });
 
-            // 2. Обновяваме списъка
             const list = document.getElementById('schedule-list');
             list.innerHTML = program.map((ev, i) => {
                 let cls = 'event-item';
@@ -133,12 +134,11 @@
                 return `
                     <div class="${cls}">
                         <span><span class="time-tag">${ev.t.split('T')[1].substring(0,5)} ч.</span> ${ev.n}</span>
-                        <span style="opacity:0.6; font-size:0.9rem;">${ev.l}</span>
+                        <span class="loc-tag">${ev.l}</span>
                     </div>
                 `;
             }).join('');
 
-            // 3. Обновяваме голямата карта
             const label = document.getElementById('label-top');
             const name = document.getElementById('current-name');
             const timer = document.getElementById('timer');
@@ -149,22 +149,19 @@
                 name.innerText = "Очакваме Ви!";
                 const diff = new Date(program[0].t).getTime() - now;
                 timer.innerText = format(diff);
-                next.innerText = "Първо събитие: " + program[0].n;
+                next.innerText = "Начало в 13:30 ч. с: " + program[0].n;
             } else if (currentIdx < program.length - 1) {
                 label.innerText = "В МОМЕНТА:";
                 name.innerText = program[currentIdx].n;
                 const diff = new Date(program[currentIdx+1].t).getTime() - now;
                 timer.innerText = format(diff);
-                next.innerHTML = `Следва в <b>${program[currentIdx+1].t.split('T')[1].substring(0,5)}</b>: ${program[currentIdx+1].n}`;
+                next.innerHTML = `Следва в <b>${program[currentIdx+1].t.split('T')[1].substring(0,5)} ч.</b>: ${program[currentIdx+1].n}`;
             } else {
                 label.innerText = "Статус:";
-                name.innerText = "Коктейл и разговори";
+                name.innerText = "Коктейл и свободна дискусия";
                 timer.innerText = "ФИНАЛ";
-                next.innerText = "Благодарим ви, че бяхте с нас!";
+                next.innerText = "Благодарим Ви, че бяхте част от нашия празник!";
             }
-            
-            // Показваме страницата, след като всичко е изчислено
-            document.body.style.opacity = "1";
         }
 
         function format(ms) {
@@ -174,7 +171,6 @@
             return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
         }
 
-        // Стартираме веднага
         update();
         setInterval(update, 1000);
     </script>
